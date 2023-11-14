@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<style>
+    .htmx-swapping {
+        opacity: 0;
+        transition: opacity 1s ease-out;
+    }
+</style>
+
+<body class="bg-sky-500">
+
+    <nav class="flex items-center justify-between px-4 py-6 text-center bg-gradient-to-r from-cyan-500 to-sky-500">
+        <a href="/" class="text-2xl text-white">Task Manager</a>
+    </nav>
+
+    <div class="w-4/5 my-6 mx-auto p-2 lg:p-10 bg-white rounded-xl">
+        <form class="flex mb-6 space-x-4" hx-post="/add-todo/" hx-target="#todos" hx-swap="afterend">
+            <input type="text" name="title" class="title flex-1 px-4 py-3 bg-gray-200 rounded-xl"
+                placeholder="The title">
+
+            <input type="date" name="due_date" class="px-4 py-3 bg-gray-200 rounded-xl" placeholder="Due date">
+
+            <!-- New priority selection -->
+            <select name="priority" class="priority p-2 rounded-xl">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+
+            <button class="p-3 rounded-xl text-white bg-cyan-500 hover:bg-cyan-600">+</button>
+        </form>
+
+
+        <div class="flex mb-3 py-3 rounded-xl bg-gray-100">
+            <div class="w-4/5">
+                <p class="px-6 text-base font-medium text-gray-500 uppercase">Title</p>
+            </div>
+
+            <div class="w-1/5 px-6 text-right">
+                <p class="text-base font-medium text-gray-500 uppercase">Actions</p>
+            </div>
+
+            <div class="hidden md:block w-1/5 px-6 text-right">
+                <p class="text-base font-medium text-gray-500 uppercase">Due Date</p>
+            </div>
+            <!-- priority -->
+            <div class="hidden md:block w-1/5 px-2 text-right">
+                <p class="text-base font-medium text-gray-500 uppercase">Priority</p>
+            </div>
+        </div>
+
+
+        <div class="divide-y divide-gray-200" id="todos">
+            {% for todo in todos %}
+            {% include 'partials/todo.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+
+
+<script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    });
+
+    document.body.addEventListener('htmx:afterRequest', (event) => {
+        document.querySelector("input.title").value = '';
+    });
+</script>
+{% endblock %}

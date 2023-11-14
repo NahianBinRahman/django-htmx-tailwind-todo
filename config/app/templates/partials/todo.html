@@ -1,0 +1,29 @@
+<article class="flex{% if todo.is_done %} bg-green-50{% endif %}">
+    <div class="w-3/5 py-2">
+        <p class="px-6 text-sm text-gray-900" hx-get="/edit/{{ todo.id }}/" hx-target="this" hx-swap="outerHTML">
+            {{ todo.title }}
+        </p>
+    </div>
+
+    <div class="w-2/5 px-2 py-2 flex justify-between space-x-2">
+        {% if not todo.is_done %}
+        <form hx-put="/update/{{ todo.id }}/" hx-target="closest article" hx-swap="outerHTML">
+            <button class="text-sky-600 hover:text-sky-900">
+                <img src="/static/images/check.png" alt="Done" class="img-icon">
+            </button>
+        </form>
+        {% endif %}
+
+        <a href="#" class="text-sky-600 hover:text-sky-900" hx-confirm="Are you sure?" hx-target="closest article"
+            hx-swap="outerHTML swap:1s" hx-delete="/delete/{{ todo.id }}/">
+            <img src="/static/images/trash-bin.png" alt="Delete" class="img-icon">
+        </a>
+
+        <!-- Due Date -->
+        <p class="text-sm text-gray-500">
+            Due Date: {{ todo.due_date|default:"Not set" }}
+        </p>
+        <!-- Priority -->
+        <p class="text-base font-medium text-gray-500">{{ todo.get_priority_display }}</p>
+    </div>
+</article>
